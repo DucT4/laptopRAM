@@ -70,9 +70,7 @@ public class Ramviewer {
                 case 7:
                     loadData();
                     break;
-                    case 8:
                   
-                    break;
                 case 9:
                     running = false;
                     System.out.println("Exiting...");

@@ -9,6 +9,9 @@ package views;
  * @author Admin
  */
 import models.Ram;
+
+import java.util.Scanner;
+
 import controllers.RamManagement;
 
 public class menu {
@@ -17,40 +20,78 @@ public class menu {
     public menu() {
         ramManagement = new RamManagement(); // Khởi tạo trong constructor
     }
+
     public Ram addRam() {
-        
-        // RamManagement ramManagement = new RamManagement();  
+
+        // RamManagement ramManagement = new RamManagement();
         System.out.println("Adding a new RAM:");
-        
-      
-        System.out.print("Enter RAM type (LPDDR5/DDR5/LPDDR4/DDR4): ");
-        String type = System.console().readLine();
-          
-        System.out.print("Enter RAM bus speed: ");
-        String bus = System.console().readLine();
-        
-        System.out.print("Enter RAM brand: ");
-        String brand = System.console().readLine();
-        
-        System.out.print("Enter quantity: ");
-        int quantity = Integer.parseInt(System.console().readLine());
-        
-        System.out.print("Enter production month and year (MM/YYYY): ");
-        String productionMonthYear = System.console().readLine();
-        
-        System.out.print("Is the RAM active? (true/false): ");
-        boolean active = Boolean.parseBoolean(System.console().readLine());
-        
-        Ram newRam = new Ram(code, type, bus, brand, quantity, productionMonthYear, active); 
-      
+        Scanner sc = new Scanner(System.in);
+
+        String type;
+        while (true) {
+            System.out.print("Enter RAM type (LPDDR5/DDR5/LPDDR4/DDR4): ");
+            type = sc.nextLine();
+            if (type.equals("LPDDR5") || type.equals("DDR5") || type.equals("LPDDR4") || type.equals("DDR4")) {
+                break;
+            } else {
+                System.out.println("Invalid RAM type. Please enter LPDDR5, DDR5, LPDDR4, or DDR4.");
+            }
+        }
+
+        String bus;
+        while (true) {
+            System.out.print("Enter RAM bus speed: ");
+            bus = sc.nextLine();
+            if (!bus.isEmpty()) {
+                break;
+            } else {
+                System.out.println("Bus speed cannot be empty.");
+            }
+        }
+
+        String brand;
+        while (true) {
+            System.out.print("Enter RAM brand: ");
+            brand = sc.nextLine();
+            if (!brand.isEmpty()) {
+                break;
+            } else {
+                System.out.println("Brand cannot be empty.");
+            }
+        }
+
+        int quantity;
+        while (true) {
+            try {
+                System.out.print("Enter quantity: ");
+                quantity = Integer.parseInt(sc.nextLine());
+                if (quantity <= 0) {
+                    System.out.println("Quantity must be a positive number.");
+                    continue;
+                }
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid quantity. Please enter a number.");
+            }
+        }
+
+        String productionMonthYear;
+        while (true) {
+            System.out.print("Enter production month and year (MM/YYYY): ");
+            productionMonthYear = sc.nextLine();
+            if (productionMonthYear.matches("\\d{2}/\\d{4}")) {
+                break;
+            } else {
+                System.out.println("Invalid format. Please enter MM/YYYY.");
+            }
+        }
+
+        // Bỏ phần hỏi người dùng về active vì khi người dùng add thì tự động hiểu là active true
+        boolean active = true; // Đặt mặc định là true
+
+        Ram newRam = new Ram(ramManagement.genCodeType(type), type, bus, brand, quantity, productionMonthYear, active);
+
         return newRam;
 
     }
 }
-
-
-
-
-
-
-

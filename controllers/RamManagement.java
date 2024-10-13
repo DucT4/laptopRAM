@@ -80,7 +80,7 @@ public class RamManagement implements IItem<Ram> {
         List<String> result = new ArrayList<>();
         for (Ram ram : ramList) {
             if (ram.getBus().toLowerCase().contains(bus.toLowerCase())) {
-                result.add(String.format("Bus: %s, Code: %s, Brand: %s", ram.getBus(), ram.getCode(), ram.getBrand()));
+                result.add(String.format("  Code : %s ,Bus: %s,  Production_month_year: %s, Quantity: %d",ram.getCode(), ram.getBus(), ram.getProductionMonthYear(), ram.getQuantity()));
             }
         }
         return result;
@@ -90,8 +90,8 @@ public class RamManagement implements IItem<Ram> {
         List<String> result = new ArrayList<>();
         for (Ram ram : ramList) {
             if (ram.getType().toLowerCase().contains(type.toLowerCase())) {
-                result.add(String.format("Type: %s, Quantity: %d, Production Date: %s", ram.getType(),
-                        ram.getQuantity(), ram.getProductionMonthYear()));
+                result.add(String.format(" Code : %s ,Type: %s, Production_month_year: %s, Quantity: %d", ram.getCode(),ram.getBus(),ram.getProductionMonthYear(),ram.getQuantity()));
+                      
             }
         }
         return result;
@@ -101,8 +101,8 @@ public class RamManagement implements IItem<Ram> {
         List<String> result = new ArrayList<>();
         for (Ram ram : ramList) {
             if (ram.getBrand().toLowerCase().contains(brand.toLowerCase())) {
-                result.add(String.format("Brand: %s, Type: %s, Bus: %s, Active: %b", ram.getBrand(), ram.getType(),
-                        ram.getBus(), ram.isActive()));
+                result.add(String.format(" Code : %s ,Brand: %s, Production_month_year: %s, Quantity: %d", ram.getCode(),ram.getBrand(),ram.getProductionMonthYear(),ram.getQuantity()));
+
             }
         }
         return result;
@@ -132,20 +132,27 @@ public class RamManagement implements IItem<Ram> {
 
         System.out.print("Type (" + oldRam.getType() + "): ");
         String newType = System.console().readLine();
-        if (!newType.isEmpty()) {
+        if (!newType.isEmpty() && (newType.equals("LPDDR5") || newType.equals("DDR5") || newType.equals("LPDDR4") || newType.equals("DDR4"))) {
             updatedRam.setType(newType);
+            updatedRam.setCode(genCodeType(newType));
+        } else {
+            updatedRam.setType(oldRam.getType());
         }
 
         System.out.print("Bus (" + oldRam.getBus() + "): ");
         String newBus = System.console().readLine();
         if (!newBus.isEmpty()) {
             updatedRam.setBus(newBus);
+        } else {
+            updatedRam.setBus(oldRam.getBus());
         }
 
         System.out.print("Brand (" + oldRam.getBrand() + "): ");
         String newBrand = System.console().readLine();
         if (!newBrand.isEmpty()) {
             updatedRam.setBrand(newBrand);
+        } else {
+            updatedRam.setBrand(oldRam.getBrand());
         }
 
         System.out.print("Quantity (" + oldRam.getQuantity() + "): ");
@@ -153,23 +160,35 @@ public class RamManagement implements IItem<Ram> {
         if (!newQuantityStr.isEmpty()) {
             try {
                 int newQuantity = Integer.parseInt(newQuantityStr);
-                updatedRam.setQuantity(newQuantity);
+                if (newQuantity > 0) {
+                    updatedRam.setQuantity(newQuantity);
+                } else {
+                    System.out.println("Quantity must be a positive number. Keeping old value.");
+                    updatedRam.setQuantity(oldRam.getQuantity());
+                }
             } catch (NumberFormatException e) {
                 System.out.println("Invalid quantity. Keeping old value.");
+                updatedRam.setQuantity(oldRam.getQuantity());
             }
+        } else {
+            updatedRam.setQuantity(oldRam.getQuantity());
         }
 
         System.out.print("Production Month/Year (" + oldRam.getProductionMonthYear() + "): ");
         String newProductionMonthYear = System.console().readLine();
-        if (!newProductionMonthYear.isEmpty()) {
+        if (!newProductionMonthYear.isEmpty() && newProductionMonthYear.matches("\\d{2}/\\d{4}")) {
             updatedRam.setProductionMonthYear(newProductionMonthYear);
+        } else {
+            updatedRam.setProductionMonthYear(oldRam.getProductionMonthYear());
         }
 
         System.out.print("Active (" + oldRam.isActive() + "): ");
         String newActiveStr = System.console().readLine();
-        if (!newActiveStr.isEmpty()) {
+        if (!newActiveStr.isEmpty() && (newActiveStr.equals("true") || newActiveStr.equals("false"))) {
             boolean newActive = Boolean.parseBoolean(newActiveStr);
             updatedRam.setActive(newActive);
+        } else {
+            updatedRam.setActive(oldRam.isActive());
         }
 
         for (int i = 0; i < ramList.size(); i++) {
@@ -183,9 +202,13 @@ public class RamManagement implements IItem<Ram> {
 
     @Override
     public Ram delete(String id) {
-        for (int i = 0; i < ramList.size(); i++) {
-            if (ramList.get(i).getCode().equals(id)) {
-                return ramList.remove(i);
+        // for (int i = 0; i < ramList.size(); i++) {
+        //     if (ramList.get(i).getCode().equals(id)) {
+        //         return ramList.remove(i);
+        for (Ram ram : ramList) {
+            if (ram.getCode().equals(id)) {
+                ram.setActive(false);
+                return ram;
             }
         }
         return null;
@@ -194,8 +217,8 @@ public class RamManagement implements IItem<Ram> {
     @Override
     public void displayAll() {
         boolean foundActiveRam = this.ramList.isEmpty();
-      
-        if (!foundActiveRam) {
+
+        if (foundActiveRam) {
             System.out.println("No active RAMs found.");
             return;
         }

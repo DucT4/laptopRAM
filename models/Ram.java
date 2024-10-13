@@ -89,7 +89,7 @@ public class Ram implements Serializable {
 
     public String toString() {
 
-        String str = String.format("%-10s%-10s%-10s%-10s%-10s%-20s%-10s", code, type, bus, brand, quantity, productionMonthYear, active);
+        String str = String.format("%-10s%-10s%-10s%-10s%-18s%-20s%-10s", code, type, bus, brand, quantity, productionMonthYear, active );
         return str;
     
     }
